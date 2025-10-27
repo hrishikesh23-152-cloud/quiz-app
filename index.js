@@ -58,6 +58,7 @@ function startquiz(){
     showq();
 }
 function showq(){
+    Resetq();
     let currentq = quiz[currentindex];
     let qno = currentindex+1;
     ques.innerHTML=qno + "." + currentq.question;
@@ -66,6 +67,59 @@ function showq(){
         btnn.innerHTML = answer.text;
         btnn.classList.add('btn');
         ans.appendChild(btnn);
+        if(answer.isCorrect){
+            btnn.dataset.correct = answer.isCorrect;
+        }
+        btnn.addEventListener('click', selectans);
     })
 }
+function Resetq(){
+    next.style.display="none";
+    while(ans.firstChild){
+        ans.removeChild(ans.firstChild);
+    }
+}
+function selectans(e){
+    const selectedbtn = e.target;
+    const isCorrect = selectedbtn.dataset.correct === "true";
+    if(isCorrect){
+        selectedbtn.classList.add('correct');
+        score++;
+    }
+    else{
+        selectedbtn.classList.add('incorrect');
+    } 
+    Array.from(ans.children).forEach(button=>{
+        if(button.dataset.correct === "true"){
+            button.classList.add('correct');
+        }
+        button.disabled = true;
+    });
+    next.style.display="block"; 
+}
+next.addEventListener('click', ()=>{
+    if(currentindex < quiz.length ){
+        handlenext();
+    }
+    else{
+        startquiz();
+    } 
+    
+  });
+  function handlenext(){
+    currentindex++;   
+    if(currentindex < quiz.length){
+        showq();
+    }
+    else{
+        showScore();
+    }
+  }
+  function showScore(){
+    Resetq();
+    ques.innerHTML = `You scored ${score} out of ${quiz.length}!`;
+    next.innerHTML = "Play Again";
+    next.style.display = "block";
+  }   
+  
 startquiz()
